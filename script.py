@@ -9,6 +9,32 @@ from langchain_groq import ChatGroq
 # Configuración visual de la página
 st.set_page_config(page_title="Generador de Problemas Matemáticos", layout="wide")
 
+# Ocultar elementos de interfaz de Streamlit y barra de Streamlit Cloud
+st.markdown(
+    """
+    <style>
+    /* Ocultar barra superior completa (header, share, star, editar, github, menu) */
+    header, [data-testid="stHeader"], [data-testid="stToolbar"] {
+        display: none !important;
+    }
+    
+    /* Ocultar pie de página de Streamlit */
+    footer {
+        display: none !important;
+    }
+    
+    /* Ocultar botón flotante de Manage App de Streamlit Cloud */
+    #manage-app-button, 
+    [data-testid="manage-app-button"],
+    .viewerBadge_container__1QSob,
+    div[class*="viewerBadge"] {
+        display: none !important;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True
+)
+
 # Recuadro para ingresar la API Key en la interfaz
 with st.sidebar:
     st.header("Configuración de Credenciales")
