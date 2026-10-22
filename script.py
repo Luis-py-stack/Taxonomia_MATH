@@ -6,10 +6,8 @@ from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import StrOutputParser
 from langchain_groq import ChatGroq
 
-# Configuración visual de la página
 st.set_page_config(page_title="Generador de Problemas Matemáticos", layout="wide")
 
-# Ocultar elementos de interfaz de Streamlit y barra de Streamlit Cloud
 st.markdown(
     """
     <style>
@@ -35,7 +33,6 @@ st.markdown(
     unsafe_allow_html=True
 )
 
-# Recuadro para ingresar la API Key en la interfaz
 with st.sidebar:
     st.header("Configuración de Credenciales")
     groq_api_key = st.text_input(
@@ -46,7 +43,6 @@ with st.sidebar:
         help="Introduce tu clave de API de Groq para ejecutar las cadenas."
     )
 
-# Instanciación del modelo con la clave provista
 llm = ChatGroq(
     model="openai/gpt-oss-120b",
     temperature=0.2,
@@ -54,7 +50,6 @@ llm = ChatGroq(
     groq_api_key=groq_api_key if groq_api_key else "dummy_key_until_input"
 )
 
-# 1. Definición del Estado
 class MathState(TypedDict):
     nivel_educativo: str
     tema: str
@@ -62,7 +57,6 @@ class MathState(TypedDict):
     problema_b: str
     problema_c: str
 
-# 2. Nodos del Grafo (Reglas y lógica intactas con notación matemática estándar)
 def generar_nivel_a(state: MathState) -> MathState:
     prompt = ChatPromptTemplate.from_messages([
         ("system", r"""Eres un experto en diseño didáctico matemático para {nivel_educativo}.
@@ -109,7 +103,6 @@ def generar_nivel_c(state: MathState) -> MathState:
     chain = prompt | llm | StrOutputParser()
     return {"problema_c": chain.invoke({"nivel_educativo": state["nivel_educativo"], "problema_b": state["problema_b"]})}
 
-# 3. Construcción del Grafo
 workflow = StateGraph(MathState)
 
 workflow.add_node("nivel_a", generar_nivel_a)
@@ -123,22 +116,18 @@ workflow.add_edge("nivel_c", END)
 
 app = workflow.compile()
 
-# 4. Interfaz de Usuario
 st.title("Generador Didáctico de Problemas Matemáticos")
 
 opciones_nivel = [
-    # Primaria
     "alumnos de 1ro de primaria",
     "alumnos de 2do de primaria",
     "alumnos de 3ro de primaria",
     "alumnos de 4to de primaria",
     "alumnos de 5to de primaria",
     "alumnos de 6to de primaria",
-    # Secundaria
     "alumnos de 1ro de secundaria",
     "alumnos de 2do de secundaria",
     "alumnos de 3ro de secundaria",
-    # Bachillerato
     "alumnos de 1ro de bachillerato",
     "alumnos de 2do de bachillerato",
     "alumnos de 3ro de bachillerato",
