@@ -36,18 +36,17 @@ class MathState(TypedDict):
     problema_b: str
     problema_c: str
 
-# 2. Nodos del Grafo
+# 2. Nodos del Grafo (Reglas y lógica intactas con notación matemática estándar)
 def generar_nivel_a(state: MathState) -> MathState:
     prompt = ChatPromptTemplate.from_messages([
         ("system", r"""Eres un experto en diseño didáctico matemático para {nivel_educativo}.
-        Tu tarea es crear una lista de exactamente 6 ejercicios de 'Nivel A' sobre el tema proporcionado.
+        Tu tarea es crear un problema de 'Nivel A' sobre el tema proporcionado.
         Reglas estrictas:
         - Enfócate ÚNICAMENTE en la reproducción de conocimientos y aplicación de procedimientos.
-        - El estudiante debe poder resolverlos memorizando definiciones, algoritmos, reglas o fórmulas.
-        - Deben ser ejercicios rutinarios y directos resueltos mediante la aplicación mecánica de fórmulas.
-        - Enumera claramente cada ejercicio del 1 al 7.
+        - El estudiante debe poder resolverlo memorizando definiciones, algoritmos, reglas o fórmulas.
+        - Debe ser un ejercicio rutinario resuelto mediante la aplicación mecánica de fórmulas.
         - NOTACIÓN MATEMÁTICA: SÍ debes incluir fórmulas, operaciones y ecuaciones matemáticas cuando el ejercicio lo requiera, pero escríbelas en texto estándar legible de teclado (por ejemplo: 7x - 4 = 3(2x + 5) - 9, x^2, a/b). Está estrictamente PROHIBIDO usar sintaxis o comandos de LaTeX (nada de \[, \], \( \), \bigl, \bigr, \frac, ni símbolos $).
-        Devuelve únicamente los 7 ejercicios numerados y redactados."""),
+        Devuelve únicamente el problema redactado."""),
         ("human", "Tema: {tema}")
     ])
     chain = prompt | llm | StrOutputParser()
@@ -148,7 +147,7 @@ if st.button("Generar problemas", type="primary"):
         col_a, col_b, col_c = st.columns(3)
         
         with col_a:
-            st.subheader("Nivel A (7 Ejercicios Mecánicos)")
+            st.subheader("Nivel A (Reproducción)")
             area_a = st.empty()
         with col_b:
             st.subheader("Nivel B (Conexiones)")
