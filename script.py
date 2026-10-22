@@ -6,8 +6,10 @@ from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import StrOutputParser
 from langchain_groq import ChatGroq
 
+# Configuración visual de la página
 st.set_page_config(page_title="Generador de Problemas Matemáticos", layout="wide")
 
+# Recuadro para ingresar la API Key en la interfaz
 with st.sidebar:
     st.header("Configuración de Credenciales")
     groq_api_key = st.text_input(
@@ -18,6 +20,7 @@ with st.sidebar:
         help="Introduce tu clave de API de Groq para ejecutar las cadenas."
     )
 
+# Instanciación del modelo con la clave provista
 llm = ChatGroq(
     model="openai/gpt-oss-120b",
     temperature=0.2,
@@ -25,6 +28,7 @@ llm = ChatGroq(
     groq_api_key=groq_api_key if groq_api_key else "dummy_key_until_input"
 )
 
+# 1. Definición del Estado
 class MathState(TypedDict):
     nivel_educativo: str
     tema: str
@@ -32,17 +36,18 @@ class MathState(TypedDict):
     problema_b: str
     problema_c: str
 
-# 2. Nodos del Grafo (Reglas y lógica intactas con restricción de formato)
+# 2. Nodos del Grafo
 def generar_nivel_a(state: MathState) -> MathState:
     prompt = ChatPromptTemplate.from_messages([
         ("system", r"""Eres un experto en diseño didáctico matemático para {nivel_educativo}.
-        Tu tarea es crear un problema de 'Nivel A' sobre el tema proporcionado.
+        Tu tarea es crear una lista de exactamente 7 ejercicios de 'Nivel A' sobre el tema proporcionado.
         Reglas estrictas:
         - Enfócate ÚNICAMENTE en la reproducción de conocimientos y aplicación de procedimientos.
-        - El estudiante debe poder resolverlo memorizando definiciones, algoritmos, reglas o fórmulas.
-        - Debe ser un ejercicio rutinario resuelto mediante la aplicación mecánica de fórmulas.
-        - FORMATO OBLIGATORIO: Está estrictamente PROHIBIDO usar código o notación LaTeX (nada de \[, \], \( \), \bigl, \bigr, $, llaves de código o delimitadores tipográficos). Escribe todas las variables, números, operaciones y ecuaciones en texto plano estándar y legible con teclado común (por ejemplo: 7x - 4 = 3(2x + 5) - 9).
-        Devuelve únicamente el problema redactado."""),
+        - El estudiante debe poder resolverlos memorizando definiciones, algoritmos, reglas o fórmulas.
+        - Deben ser ejercicios rutinarios y directos resueltos mediante la aplicación mecánica de fórmulas.
+        - Enumera claramente cada ejercicio del 1 al 7.
+        - NOTACIÓN MATEMÁTICA: SÍ debes incluir fórmulas, operaciones y ecuaciones matemáticas cuando el ejercicio lo requiera, pero escríbelas en texto estándar legible de teclado (por ejemplo: 7x - 4 = 3(2x + 5) - 9, x^2, a/b). Está estrictamente PROHIBIDO usar sintaxis o comandos de LaTeX (nada de \[, \], \( \), \bigl, \bigr, \frac, ni símbolos $).
+        Devuelve únicamente los 7 ejercicios numerados y redactados."""),
         ("human", "Tema: {tema}")
     ])
     chain = prompt | llm | StrOutputParser()
@@ -57,7 +62,7 @@ def generar_nivel_b(state: MathState) -> MathState:
         - El estudiante ahora debe interpretar información, comparar métodos de resolución, o seleccionar estrategias adecuadas.
         - Relaciona distintas representaciones y establece conexiones entre el lenguaje matemático y el cotidiano.
         - Obliga al alumno a justificar sus decisiones.
-        - FORMATO OBLIGATORIO: Está estrictamente PROHIBIDO usar código o notación LaTeX (nada de \[, \], \( \), \bigl, \bigr, $, llaves de código o delimitadores tipográficos). Escribe todas las variables, números, operaciones y ecuaciones en texto plano estándar y legible con teclado común (por ejemplo: 7x - 4 = 3(2x + 5) - 9).
+        - NOTACIÓN MATEMÁTICA: SÍ debes incluir fórmulas, operaciones y ecuaciones matemáticas cuando el ejercicio lo requiera, pero escríbelas en texto estándar legible de teclado (por ejemplo: 7x - 4 = 3(2x + 5) - 9, x^2, a/b). Está estrictamente PROHIBIDO usar sintaxis o comandos de LaTeX (nada de \[, \], \( \), \bigl, \bigr, \frac, ni símbolos $).
         Devuelve únicamente el problema redactado."""),
         ("human", "Problema Nivel A:\n{problema_a}\n\nModifícalo al Nivel B:")
     ])
@@ -72,13 +77,14 @@ def generar_nivel_c(state: MathState) -> MathState:
         - El estudiante debe identificar relaciones entre conceptos matemáticos y formular generalizaciones.
         - Debe requerir que el alumno construya estrategias propias y argumente sus procedimientos.
         - Transfiere los conocimientos a una nueva situación o contexto inusual/complejo.
-        - FORMATO OBLIGATORIO: Está estrictamente PROHIBIDO usar código o notación LaTeX (nada de \[, \], \( \), \bigl, \bigr, $, llaves de código o delimitadores tipográficos). Escribe todas las variables, números, operaciones y ecuaciones en texto plano estándar y legible con teclado común (por ejemplo: 7x - 4 = 3(2x + 5) - 9).
+        - NOTACIÓN MATEMÁTICA: SÍ debes incluir fórmulas, operaciones y ecuaciones matemáticas cuando el ejercicio lo requiera, pero escríbelas en texto estándar legible de teclado (por ejemplo: 7x - 4 = 3(2x + 5) - 9, x^2, a/b). Está estrictamente PROHIBIDO usar sintaxis o comandos de LaTeX (nada de \[, \], \( \), \bigl, \bigr, \frac, ni símbolos $).
         Devuelve únicamente el problema redactado."""),
         ("human", "Problema Nivel B:\n{problema_b}\n\nTransfórmalo al Nivel C:")
     ])
     chain = prompt | llm | StrOutputParser()
     return {"problema_c": chain.invoke({"nivel_educativo": state["nivel_educativo"], "problema_b": state["problema_b"]})}
 
+# 3. Construcción del Grafo
 workflow = StateGraph(MathState)
 
 workflow.add_node("nivel_a", generar_nivel_a)
@@ -92,18 +98,22 @@ workflow.add_edge("nivel_c", END)
 
 app = workflow.compile()
 
+# 4. Interfaz de Usuario
 st.title("Generador Didáctico de Problemas Matemáticos")
 
 opciones_nivel = [
+    # Primaria
     "alumnos de 1ro de primaria",
     "alumnos de 2do de primaria",
     "alumnos de 3ro de primaria",
     "alumnos de 4to de primaria",
     "alumnos de 5to de primaria",
     "alumnos de 6to de primaria",
+    # Secundaria
     "alumnos de 1ro de secundaria",
     "alumnos de 2do de secundaria",
     "alumnos de 3ro de secundaria",
+    # Bachillerato
     "alumnos de 1ro de bachillerato",
     "alumnos de 2do de bachillerato",
     "alumnos de 3ro de bachillerato",
@@ -138,7 +148,7 @@ if st.button("Generar problemas", type="primary"):
         col_a, col_b, col_c = st.columns(3)
         
         with col_a:
-            st.subheader("Nivel A (Reproducción)")
+            st.subheader("Nivel A (7 Ejercicios Mecánicos)")
             area_a = st.empty()
         with col_b:
             st.subheader("Nivel B (Conexiones)")
