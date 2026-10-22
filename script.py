@@ -32,14 +32,16 @@ class MathState(TypedDict):
     problema_b: str
     problema_c: str
 
+# 2. Nodos del Grafo (Reglas y lógica intactas con restricción de formato)
 def generar_nivel_a(state: MathState) -> MathState:
     prompt = ChatPromptTemplate.from_messages([
-        ("system", """Eres un experto en diseño didáctico matemático para {nivel_educativo}.
+        ("system", r"""Eres un experto en diseño didáctico matemático para {nivel_educativo}.
         Tu tarea es crear un problema de 'Nivel A' sobre el tema proporcionado.
         Reglas estrictas:
         - Enfócate ÚNICAMENTE en la reproducción de conocimientos y aplicación de procedimientos.
         - El estudiante debe poder resolverlo memorizando definiciones, algoritmos, reglas o fórmulas.
         - Debe ser un ejercicio rutinario resuelto mediante la aplicación mecánica de fórmulas.
+        - FORMATO OBLIGATORIO: Está estrictamente PROHIBIDO usar código o notación LaTeX (nada de \[, \], \( \), \bigl, \bigr, $, llaves de código o delimitadores tipográficos). Escribe todas las variables, números, operaciones y ecuaciones en texto plano estándar y legible con teclado común (por ejemplo: 7x - 4 = 3(2x + 5) - 9).
         Devuelve únicamente el problema redactado."""),
         ("human", "Tema: {tema}")
     ])
@@ -48,13 +50,14 @@ def generar_nivel_a(state: MathState) -> MathState:
 
 def generar_nivel_b(state: MathState) -> MathState:
     prompt = ChatPromptTemplate.from_messages([
-        ("system", """Eres un experto en diseño didáctico matemático para {nivel_educativo}.
+        ("system", r"""Eres un experto en diseño didáctico matemático para {nivel_educativo}.
         Tu tarea es tomar un problema de Nivel A y modificar su redacción para que encaje en el 'Nivel B'.
         Reglas estrictas:
         - Debe implicar una mayor demanda cognitiva.
         - El estudiante ahora debe interpretar información, comparar métodos de resolución, o seleccionar estrategias adecuadas.
         - Relaciona distintas representaciones y establece conexiones entre el lenguaje matemático y el cotidiano.
         - Obliga al alumno a justificar sus decisiones.
+        - FORMATO OBLIGATORIO: Está estrictamente PROHIBIDO usar código o notación LaTeX (nada de \[, \], \( \), \bigl, \bigr, $, llaves de código o delimitadores tipográficos). Escribe todas las variables, números, operaciones y ecuaciones en texto plano estándar y legible con teclado común (por ejemplo: 7x - 4 = 3(2x + 5) - 9).
         Devuelve únicamente el problema redactado."""),
         ("human", "Problema Nivel A:\n{problema_a}\n\nModifícalo al Nivel B:")
     ])
@@ -63,12 +66,13 @@ def generar_nivel_b(state: MathState) -> MathState:
 
 def generar_nivel_c(state: MathState) -> MathState:
     prompt = ChatPromptTemplate.from_messages([
-        ("system", """Eres un experto en diseño didáctico matemático para {nivel_educativo}.
+        ("system", r"""Eres un experto en diseño didáctico matemático para {nivel_educativo}.
         Tu tarea es tomar un problema de Nivel B y transformarlo para alcanzar el 'Nivel C' (nivel profundo de comprensión).
         Reglas estrictas:
         - El estudiante debe identificar relaciones entre conceptos matemáticos y formular generalizaciones.
         - Debe requerir que el alumno construya estrategias propias y argumente sus procedimientos.
         - Transfiere los conocimientos a una nueva situación o contexto inusual/complejo.
+        - FORMATO OBLIGATORIO: Está estrictamente PROHIBIDO usar código o notación LaTeX (nada de \[, \], \( \), \bigl, \bigr, $, llaves de código o delimitadores tipográficos). Escribe todas las variables, números, operaciones y ecuaciones en texto plano estándar y legible con teclado común (por ejemplo: 7x - 4 = 3(2x + 5) - 9).
         Devuelve únicamente el problema redactado."""),
         ("human", "Problema Nivel B:\n{problema_b}\n\nTransfórmalo al Nivel C:")
     ])
