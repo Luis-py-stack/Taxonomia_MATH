@@ -40,7 +40,7 @@ class MathState(TypedDict):
 def generar_nivel_a(state: MathState) -> MathState:
     prompt = ChatPromptTemplate.from_messages([
         ("system", r"""Eres un experto en diseño didáctico matemático para {nivel_educativo}.
-        Tu tarea es crear una lista de exactamente 7 ejercicios de 'Nivel A' sobre el tema proporcionado.
+        Tu tarea es crear una lista de exactamente 6 ejercicios de 'Nivel A' sobre el tema proporcionado.
         Reglas estrictas:
         - Enfócate ÚNICAMENTE en la reproducción de conocimientos y aplicación de procedimientos.
         - El estudiante debe poder resolverlos memorizando definiciones, algoritmos, reglas o fórmulas.
